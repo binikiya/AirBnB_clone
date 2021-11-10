@@ -13,11 +13,19 @@ class BaseModel:
     
     TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """initializes the basemodel class"""
-        self.id = str(uuid4())
-        self.created_at = datetime.today()
-        self.updated_at = self.created_at
+        if (not kwargs):
+            self.id = str(uuid4())
+            self.created_at = datetime.today()
+            self.updated_at = self.created_at
+            models.storage.new(self)
+        elif kwargs:
+            for key, value in kwargs.items():
+                if key != '__class__':
+                    if key in ['created_at', 'updated_at']:
+                        value = datetime.strptime(value, BaseModel.TIME_FORMAT)
+                    setattr(self, key, value)
 
     def __str__(self):
         """returns string representation of this class"""
