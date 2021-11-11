@@ -15,6 +15,7 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 
+
 class HBNBCommand(cmd.Cmd):
 
     classnames = [
@@ -45,7 +46,7 @@ class HBNBCommand(cmd.Cmd):
         print("")
         return True
 
-    def do_all(self, args:str):
+    def do_all(self, args):
         """ Prints all class instances
         """
         filtered_obj = []
@@ -64,7 +65,7 @@ class HBNBCommand(cmd.Cmd):
                 return
         print(filtered_obj)
 
-    def do_show(self, args:str):
+    def do_show(self, args):
         """ Displays the string representation of a class instance
             Example : $ show BaseModel 1234
         """
@@ -76,7 +77,7 @@ class HBNBCommand(cmd.Cmd):
             class_name, class_id = parsedargs
             id_formatted = '{}.{}'.format(class_name, class_id)
             if class_name in self.classnames:
-                if  id_formatted not in all_instance:
+                if id_formatted not in all_instance:
                     print("** no instance found ** ")
                 else:
                     print(all_instance[id_formatted])
@@ -101,7 +102,7 @@ class HBNBCommand(cmd.Cmd):
             class_name, class_id = parsedargs
             id_formatted = '{}.{}'.format(class_name, class_id)
             if class_name in self.classnames:
-                if  id_formatted not in all_instance:
+                if id_formatted not in all_instance:
                     print("** no instance found ** ")
                 else:
                     del all_instance[id_formatted]
@@ -115,7 +116,7 @@ class HBNBCommand(cmd.Cmd):
         if arg_len == 0:
             print("** class name missing ** ")
 
-    def do_update(self, args:str):
+    def do_update(self, args):
         parsed_args = args.split()
         if len(parsed_args) == 0:
             print("** class name missing **")
@@ -129,12 +130,12 @@ class HBNBCommand(cmd.Cmd):
                 if id_formated not in all_instance:
                     print("** no instance found **")
                 else:
-                    update_target = all_instance[id_formated]
-                    if attr_name in update_target.__class__.__dict__.keys():
-                        attr_type = type(update_target.__class__.__dict__[attr_name])
-                        update_target.__dict__[attr_name] = attr_type(attr_val)
+                    obj_trgt = all_instance[id_formated]
+                    attr_type = type(obj_trgt.__class__.__dict__[attr_name])
+                    if attr_name in obj_trgt.__class__.__dict__.keys():
+                        obj_trgt.__dict__[attr_name] = attr_type(attr_val)
                     else:
-                        update_target.__dict__[attr_name] = attr_val
+                        obj_trgt.__dict__[attr_name] = attr_val
         elif len(parsed_args) == 3:
             print("** value missing **")
         elif len(parsed_args) == 2:
@@ -142,7 +143,7 @@ class HBNBCommand(cmd.Cmd):
         elif len(parsed_args) == 1:
             print("** instance id missing **")
 
-    def do_create(self, args:str):
+    def do_create(self, args):
         """ Creates a new instance of BaseModel and saves it to JSON file
         """
         parsed_args = args.split()
