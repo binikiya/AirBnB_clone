@@ -47,7 +47,9 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_all(self, args):
-        """ Prints all class instances
+        """ Prints all string representation of all
+        instances based or not on the class name.
+        Usage: all Classname or all
         """
         filtered_obj = []
         all_instance = storage.all()
@@ -66,8 +68,9 @@ class HBNBCommand(cmd.Cmd):
         print(filtered_obj)
 
     def do_show(self, args):
-        """ Displays the string representation of a class instance
-            Example : $ show BaseModel 1234
+        """ Prints the string representation of an instance
+        based on the class name and id
+        Example : show classname id
         """
         parsedargs = args.split()
         all_instance = storage.all()
@@ -91,9 +94,10 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing ** ")
 
     def do_destroy(self, args):
-        """ Destroys a class instance
+        """ Deletes an instance based on the class name 
+        and id (save the change into the JSON file)
+        Usage : destroy classname id
         """
-
         parsedargs = args.split()
         all_instance = storage.all()
         class_name = ""
@@ -117,6 +121,10 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing ** ")
 
     def do_update(self, args):
+        """ Updates an instance based on the class name and id by adding or
+        updating attribute (save the change into the JSON file)
+        Usage: update <class name> <id> <attribute name> "<attribute value>"
+        """
         parsed_args = args.split()
         if len(parsed_args) == 0:
             print("** class name missing **")
@@ -145,6 +153,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Creates a new instance of BaseModel and saves it to JSON file
+        Usage: create classname
         """
         parsed_args = args.split()
         if len(parsed_args) == 0:
