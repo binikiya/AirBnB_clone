@@ -9,18 +9,29 @@ from models import storage
 from models.base_model import BaseModel
 
 from models.user import User
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+from models.state import State
 
 class HBNBCommand(cmd.Cmd):
 
     classnames = [
-        'BaseModel'
+        'BaseModel',
+        'User',
+        'Amenity',
+        'Place',
+        'Review',
+        'State',
+        'City'
     ]
 
     def __init__(self):
         cmd.Cmd.__init__(self)
         self.prompt = "(hbnb) "
 
-    def emptyline(self) -> bool:
+    def emptyline(self):
         pass
 
     def do_quit(self, args):
@@ -131,14 +142,14 @@ class HBNBCommand(cmd.Cmd):
         elif len(parsed_args) == 1:
             print("** instance id missing **")
 
-    def do_create(self, args):
+    def do_create(self, args:str):
         """ Creates a new instance of BaseModel and saves it to JSON file
         """
-        if args == None:
+        parsed_args = args.split()
+        if len(parsed_args) == 0:
             print("** class name missing ** ")
-        elif args in self.classnames:
-            if args == 'BaseModel':
-                new_obj = BaseModel()
+        elif parsed_args[0] in self.classnames:
+                new_obj = eval(parsed_args[0])()
                 print(new_obj.id)
                 storage.new(new_obj)
                 storage.save()
