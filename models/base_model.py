@@ -10,7 +10,7 @@ import models
 
 class BaseModel:
     """Base for all AirBnB website projects"""
-    
+
     TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
     def __init__(self, *args, **kwargs):
@@ -29,7 +29,8 @@ class BaseModel:
 
     def __str__(self):
         """returns string representation of this class"""
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
+        name = self.__class__.__name__
+        return "[{}] ({}) {}".format(name, self.id, self.__dict__)
 
     def save(self):
         """updates updated_at with the current datetime"""
