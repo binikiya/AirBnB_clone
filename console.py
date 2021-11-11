@@ -5,6 +5,7 @@
 """
 
 import cmd
+from models.user import User
 
 class HBNBCommand(cmd.Cmd):
     def __init__(self):
