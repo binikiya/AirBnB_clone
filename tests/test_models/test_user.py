@@ -93,5 +93,100 @@ class TestUser(unittest.TestCase):
         with self.assertRaises(TypeError):
             User(id=None, created_at=None, updated_at=None)
 
+class TestUserSave(unittest.TestCase):
+    """Testing save method in the User class"""
+
+    @classmethod
+    def SetUp(self):
+        try:
+            os.rename("file.json", "temp")
+        except IOError:
+            pass
+
+    def RenameRemove(self):
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("temp", "file.json")
+        except IOError:
+            pass
+
+    def test_one_save(self):
+        user = User()
+        sleep(0.5)
+        up_at = user.updated_at
+        user.save()
+        self.assertLess(up_at, user.updated_at)
+
+    def test_two_save(self):
+        user = User()
+        sleep(0.5)
+        up_at1 = user.updated_at
+        user.save()
+        self.assertLess(up_at1, user.updated_at)
+        up_at2 = user.updated_at
+        sleep(0.5)
+        user.save()
+        self.assertLess(up_at2, user.updated_at)
+
+    def test_with_none_arg(self):
+        with self.assertRaises(TypeError):
+            User().save(None)
+
+    def test_save_if_updates(self):
+        user = User()
+        user.save()
+        user_id = "User." + user.id
+        with open("file.json", "r") as f:
+            self.assertIn(user_id, f.read())
+
+class TestUserDict(unittest.TestCase):
+    """unittest for testing to_dict mothod of User class"""
+
+    def test_dict_type(self):
+        self.assertTrue(dict, type(User().to_dict()))
+
+    def test_dict_with_correct_keys(self):
+        user = User()
+        self.assertIn("id", user.to_dict())
+        self.assertIn("created_at", user.to_dict())
+        self.assertIn("updated_at", user.to_dict())
+        self.assertIn("__class__", user.to_dict())
+
+    def test_dict_with_added_attr(self):
+        user = User()
+        user.middle_name = "ALX"
+        user.my_number = 88
+        self.assertEqual("ALX", user.middle_name)
+        self.assertIn("my_number", user.to_dict())
+
+    def test_if_datetime_attr(self):
+        user_dict = User().to_dict()
+        self.assertEqual(str, type(user_dict["id"]))
+        self.assertEqual(str, type(user_dict["created_at"]))
+        self.assertEqual(str, type(user_dict["updated_at"]))
+
+    def test_to_dict_output(self):
+        date = datetime.today()
+        user = User()
+        user.id = "123456"
+        user.created_at = user.updated_at = date
+        dict_t = {
+            'id': '123456',
+            '__class__': 'User',
+            'created_at': date.isoformat(),
+            'updated_at': date.isoformat(),
+        }
+        self.assertDictEqual(user.to_dict(), dict_t)
+
+    def test_with_dict(self):
+        self.assertNotEqual(User().to_dict(), User().__dict__)
+
+    def test_with_none_args(self):
+        with self.assertRaises(TypeError):
+            User().to_dict(None)
+
 if __name__ == '__main__':
     unittest.main()
