@@ -52,7 +52,7 @@ class HBNBCommand(cmd.Cmd):
         else:
             count = len(cache_store)
         print(count)
-    
+
     def extract_dict(self, args):
         self.dict_cache = None
         firstval = args.split('{')
@@ -72,12 +72,10 @@ class HBNBCommand(cmd.Cmd):
             "count": self.do_count,
             "update": self.do_update
         }
-        ch = {
-            '(':[' ', 1], ')':[' ', 1], ',':['', 2]
-        }
+        ch = {'(': [' ', 1], ')': [' ', 1], ',': ['', 2]}
         test_for_func = self.extract_dict(line).split('.')
         if len(test_for_func) == 2:
-            class_name:str = test_for_func[0]
+            class_name = test_for_func[0]
             if (class_name in self.classnames):
                 s_args = test_for_func[1]
                 for i in ch:
@@ -89,7 +87,7 @@ class HBNBCommand(cmd.Cmd):
                     finalstr += '{}'.format(class_name)
                     dict_arr = []
                     for i in finalargs:
-                        if self.dict_cache != None:
+                        if self.dict_cache is not None:
                             if i != cmdcache:
                                 i = i.replace('"', '', 2)
                                 dict_arr.append(i)
@@ -97,7 +95,7 @@ class HBNBCommand(cmd.Cmd):
                             if i != cmdcache:
                                 i = i.replace('"', '', 2)
                                 finalstr += ' {}'.format(i)
-                    if self.dict_cache != None:
+                    if self.dict_cache is not None:
                         dict_arr.append(self.dict_cache)
                         dict_arr.append(class_name)
                         cmd_pair[cmdcache](dict_arr)
@@ -170,7 +168,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing ** ")
 
     def do_destroy(self, args):
-        """ Deletes an instance based on the class name 
+        """ Deletes an instance based on the class name
         and id (save the change into the JSON file)
         Usage : destroy classname id
         """
@@ -201,7 +199,7 @@ class HBNBCommand(cmd.Cmd):
         updating attribute (save the change into the JSON file)
         Usage: update <class name> <id> <attribute name> "<attribute value>"
         """
-        if self.dict_cache == None:
+        if self.dict_cache is None:
             parsed_args = args.split()
         else:
             parsed_args = args
@@ -215,7 +213,8 @@ class HBNBCommand(cmd.Cmd):
             if id_formated in all_instance:
                 obj = all_instance[id_formated]
                 for k, v in dict_.items():
-                    if k in obj.__class__.__dict__.keys():
+                    if k in obj.__class__.__dict__.keys() and type(
+                            obj.__class__dict__[k]) in [float, int, str]:
                         attr_type = type(obj.__class__.__dict__[k])
                         obj.__dict__[k] = attr_type(v)
                     else:
@@ -237,7 +236,7 @@ class HBNBCommand(cmd.Cmd):
                         obj_trgt.__dict__[attr_name] = attr_type(attr_val)
                     else:
                         obj_trgt.__dict__[attr_name] = attr_val
-                
+
                 storage.save()
         elif len(parsed_args) == 3:
             print("** value missing **")
