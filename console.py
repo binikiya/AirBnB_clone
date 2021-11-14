@@ -42,7 +42,6 @@ class HBNBCommand(cmd.Cmd):
         """This counts the number of class instance indicated
         or all the instances saved
         """
-        
         count = 0
         parsed_args = args.split()
         cache_store = storage.all()
@@ -88,14 +87,23 @@ class HBNBCommand(cmd.Cmd):
                     cmdcache = finalargs[0]
                     finalstr = ''
                     finalstr += '{}'.format(class_name)
+                    dict_arr = []
                     for i in finalargs:
-                        if i != cmdcache:
-                            i = i.replace('"', '', 2)
-                            finalstr += ' {}'.format(i)
+                        if self.dict_cache != None:
+                            if i != cmdcache:
+                                i = i.replace('"', '', 2)
+                                dict_arr.append(i)
+                        else:
+                            if i != cmdcache:
+                                i = i.replace('"', '', 2)
+                                finalstr += ' {}'.format(i)
                     if self.dict_cache != None:
-                        finalstr += ' {}'.format(self.dict_cache)
+                        dict_arr.append(self.dict_cache)
+                        dict_arr.append(class_name)
+                        cmd_pair[cmdcache](dict_arr)
+                    else:
+                        cmd_pair[cmdcache](finalstr)
                     print(finalstr)
-                    cmd_pair[cmdcache](finalstr)
         else:
             print("*** Unknown syntax: {}".format(line))
             return False
@@ -193,10 +201,27 @@ class HBNBCommand(cmd.Cmd):
         updating attribute (save the change into the JSON file)
         Usage: update <class name> <id> <attribute name> "<attribute value>"
         """
-        parsed_args = args.split()
+        if self.dict_cache == None:
+            parsed_args = args.split()
+        else:
+            parsed_args = args
         if len(parsed_args) == 0:
             print("** class name missing **")
-        if len(parsed_args) >= 4:
+        elif len(parsed_args) == 3 and type(eval(parsed_args[1]) == dict):
+            class_id, dict_val, class_name = parsed_args
+            dict_ = eval(dict_val)
+            id_formated = "{}.{}".format(class_name, class_id)
+            all_instance = storage.all()
+            if id_formated in all_instance:
+                obj = all_instance[id_formated]
+                for k, v in dict_.items():
+                    if k in obj.__class__.__dict__.keys():
+                        attr_type = type(obj.__class__.__dict__[k])
+                        obj.__dict__[k] = attr_type(v)
+                    else:
+                        obj.__dict__[k] = v
+                storage.save()
+        elif len(parsed_args) >= 4:
             class_name, class_id, attr_name, attr_val, *tmp = parsed_args
             if class_name not in self.classnames:
                 print("** class doesn't exist **")
@@ -212,6 +237,8 @@ class HBNBCommand(cmd.Cmd):
                         obj_trgt.__dict__[attr_name] = attr_type(attr_val)
                     else:
                         obj_trgt.__dict__[attr_name] = attr_val
+                
+                storage.save()
         elif len(parsed_args) == 3:
             print("** value missing **")
         elif len(parsed_args) == 2:
