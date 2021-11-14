@@ -5,6 +5,7 @@ This module implements the HBnB console
 """
 
 import cmd
+from typing import final
 from models import storage
 from models.base_model import BaseModel
 
@@ -34,6 +35,54 @@ class HBNBCommand(cmd.Cmd):
 
     def emptyline(self):
         pass
+
+    def do_count(self, args):
+        """This counts the number of class instance indicated
+        or all the instances saved
+        """
+        
+        count = 0
+        parsed_args = args.split()
+        cache_store = storage.all()
+        if len(parsed_args) > 0:
+            for i in cache_store.values():
+                    if i.__class__.__name__ == parsed_args[0]:
+                        count += 1
+        else:
+            count = len(cache_store)
+        print(count)
+
+    def default(self, line):
+        cmd_pair = {
+            "all": self.do_all,
+            "show": self.do_show,
+            "destroy": self.do_destroy,
+            "count": self.do_count,
+            "update": self.do_update
+        }
+        ch = {
+            '(':[' ', 1], ')':[' ', 1], '"':['', 2]
+        }
+        test_for_func = line.split('.')
+        if len(test_for_func) == 2:
+            class_name:str = test_for_func[0]
+            if (class_name in self.classnames):
+                s_args = test_for_func[1]
+                for i in ch:
+                    s_args = s_args.replace(i, ch[i][0], ch[i][1])
+                finalargs = s_args.split()
+                if len(finalargs) >= 0 and finalargs[0] in cmd_pair:
+                    cmdcache = finalargs[0]
+                    finalstr = ''
+                    finalstr += '{}'.format(class_name)
+                    for i in finalargs:
+                        if i != cmdcache:
+                            finalstr += ' {}'.format(i)
+                    print(finalstr)
+                    cmd_pair[cmdcache](finalstr)
+        else:
+            print("*** Unknown syntax: {}".format(line))
+            return False
 
     def do_quit(self, args):
         """Quit command to exit program
