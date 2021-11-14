@@ -101,7 +101,6 @@ class HBNBCommand(cmd.Cmd):
                         cmd_pair[cmdcache](dict_arr)
                     else:
                         cmd_pair[cmdcache](finalstr)
-                    print(finalstr)
         else:
             print("*** Unknown syntax: {}".format(line))
             return False
