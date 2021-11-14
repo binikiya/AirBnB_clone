@@ -195,7 +195,7 @@ class HBNBCommand(cmd.Cmd):
         all_instance = storage.all()
         class_name = ""
         arg_len = len(parsedargs)
-        if arg_len > 1:
+        if arg_len == 2:
             class_name, class_id = parsedargs
             id_formatted = '{}.{}'.format(class_name, class_id)
             if class_name in self.classnames:
@@ -250,8 +250,8 @@ class HBNBCommand(cmd.Cmd):
                     print("** no instance found **")
                 else:
                     obj_trgt = all_instance[id_formated]
-                    attr_type = type(obj_trgt.__class__.__dict__[attr_name])
                     if attr_name in obj_trgt.__class__.__dict__.keys():
+                        attr_type = type(obj_trgt.__class__.__dict__[attr_name])
                         obj_trgt.__dict__[attr_name] = attr_type(attr_val)
                     else:
                         obj_trgt.__dict__[attr_name] = attr_val
