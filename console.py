@@ -120,37 +120,62 @@ class HBNBCommand(cmd.Cmd):
         if arg_len == 0:
             print("** class name missing ** ")
 
+    def parse(arg, id=" "):
+        """returns a list containig the parsed argument from the string"""
+        arg_list = arg.split(id)
+        narg_list = []
+        for n in arg_list:
+            if n != '':
+                narg_list.append(n)
+        return narg_list
+
     def do_update(self, args):
         """ Updates an instance based on the class name and id by adding or
         updating attribute (save the change into the JSON file)
         Usage: update <class name> <id> <attribute name> "<attribute value>"
         """
-        parsed_args = args.split()
-        if len(parsed_args) == 0:
+        arg_list = HBNBCommand.parse(args)
+        objdict = storage.all()
+        if len(arg_list) == 0:
             print("** class name missing **")
-        if len(parsed_args) >= 4:
-            class_name, class_id, attr_name, attr_val, *tmp = parsed_args
-            if class_name not in self.classnames:
-                print("** class doesn't exist **")
-            else:
-                all_instance = storage.all()
-                id_formated = "{}.{}".format(class_name, class_id)
-                if id_formated not in all_instance:
-                    print("** no instance found **")
-                else:
-                    obj_trgt = all_instance[id_formated]
-                    attr_type = type(obj_trgt.__class__.__dict__[attr_name])
-                    if attr_name in obj_trgt.__class__.__dict__.keys():
-                        obj_trgt.__dict__[attr_name] = attr_type(attr_val)
-                    else:
-                        obj_trgt.__dict__[attr_name] = attr_val
-        elif len(parsed_args) == 3:
-            print("** value missing **")
-        elif len(parsed_args) == 2:
-            print("** attribute name missing **")
-        elif len(parsed_args) == 1:
+            return False
+        if arg_list[0] not in HBNBCommand.classnames:
+            print("** class doesn't exist **")
+            return False
+        if len(arg_list) == 1:
             print("** instance id missing **")
-
+            return False
+        if "{}.{}".format(arg_list[0], arg_list[1]) not in objdict.keys():
+            print("** no instance found **")
+            return False
+        if len(arg_list) == 2:
+            print("** attribute name missing **")
+            return False
+        if len(arg_list) == 3:
+            try:
+                type(eval(arg_list[2])) != dict
+            except NameError:
+                print("** value missing **")
+                return False
+        if len(arg_list) == 4:
+            obj = objdict["{}.{}".format(arg_list[0], arg_list[1])]
+            if arg_list[2] in obj.__class__.__dict__.keys():
+                valtype = type(obj.__class__.__dict__[arg_list[2]])
+                obj.__dict__[arg_list[2]] = valtype(arg_list[3])
+            else:
+                obj.__dict__[arg_list[2]] = arg_list[3]
+                
+        elif type(eval(arg_list[2])) == dict:
+            obj = objdict["{}.{}".format(arg_list[0], arg_list[1])]
+            for k, v in eval(arg_list[2]).items():
+                if (k in obj.__class__.__dict__.keys() and type(
+                        obj.__class__dict__[k]) in {str, int, float}):
+                    valtype = type(obj.__class__.__dict__[k])
+                    obj.__dict__[k] = valtype[v]
+                else:
+                    obj.__dict__[k] = v
+        storage.save()
+        
     def do_create(self, args):
         """ Creates a new instance of BaseModel and saves it to JSON file
         Usage: create classname
