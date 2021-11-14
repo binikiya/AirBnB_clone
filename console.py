@@ -18,6 +18,13 @@ from models.state import State
 
 
 class HBNBCommand(cmd.Cmd):
+    """
+    This implements the HBnB console
+
+    Args:
+        classnames: this contains all classes
+        dict_cache: this caches the kwarg passed in shell
+    """
 
     classnames = [
         'BaseModel',
@@ -32,10 +39,16 @@ class HBNBCommand(cmd.Cmd):
     dict_cache = None
 
     def __init__(self):
+        """
+        Initializes the console
+        """
         cmd.Cmd.__init__(self)
         self.prompt = "(hbnb) "
 
     def emptyline(self):
+        """
+        This does nothing on empty line
+        """
         pass
 
     def do_count(self, args):
@@ -54,6 +67,10 @@ class HBNBCommand(cmd.Cmd):
         print(count)
 
     def extract_dict(self, args):
+        """
+        This function caches the kwargs passed in
+        <class_name>.update(id, kwarg)
+        """
         self.dict_cache = None
         firstval = args.split('{')
         if len(firstval) == 2:
@@ -65,6 +82,9 @@ class HBNBCommand(cmd.Cmd):
         return args
 
     def default(self, line):
+        """
+        This implements unknown commands
+        """
         cmd_pair = {
             "all": self.do_all,
             "show": self.do_show,
