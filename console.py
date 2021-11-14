@@ -29,6 +29,8 @@ class HBNBCommand(cmd.Cmd):
         'City'
     ]
 
+    dict_cache = None
+
     def __init__(self):
         cmd.Cmd.__init__(self)
         self.prompt = "(hbnb) "
@@ -51,6 +53,17 @@ class HBNBCommand(cmd.Cmd):
         else:
             count = len(cache_store)
         print(count)
+    
+    def extract_dict(self, args):
+        self.dict_cache = None
+        firstval = args.split('{')
+        if len(firstval) == 2:
+            secondval = firstval[1].split('}')
+            if len(secondval) == 2:
+                finalval = '{' + secondval[0] + '}'
+                self.dict_cache = finalval
+                args = args.replace(finalval, '', 1)
+        return args
 
     def default(self, line):
         cmd_pair = {
@@ -61,9 +74,9 @@ class HBNBCommand(cmd.Cmd):
             "update": self.do_update
         }
         ch = {
-            '(':[' ', 1], ')':[' ', 1], '"':['', 2]
+            '(':[' ', 1], ')':[' ', 1], ',':['', 2]
         }
-        test_for_func = line.split('.')
+        test_for_func = self.extract_dict(line).split('.')
         if len(test_for_func) == 2:
             class_name:str = test_for_func[0]
             if (class_name in self.classnames):
@@ -77,7 +90,10 @@ class HBNBCommand(cmd.Cmd):
                     finalstr += '{}'.format(class_name)
                     for i in finalargs:
                         if i != cmdcache:
+                            i = i.replace('"', '', 2)
                             finalstr += ' {}'.format(i)
+                    if self.dict_cache != None:
+                        finalstr += ' {}'.format(self.dict_cache)
                     print(finalstr)
                     cmd_pair[cmdcache](finalstr)
         else:
@@ -126,7 +142,10 @@ class HBNBCommand(cmd.Cmd):
         class_name = ""
         arg_len = len(parsedargs)
         if arg_len > 1:
-            class_name, class_id = parsedargs
+            if arg_len == 2:
+                class_name, class_id = parsedargs
+            else:
+                class_name, class_id, *tmp = parsedargs
             id_formatted = '{}.{}'.format(class_name, class_id)
             if class_name in self.classnames:
                 if id_formatted not in all_instance:
