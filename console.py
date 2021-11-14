@@ -233,7 +233,7 @@ class HBNBCommand(cmd.Cmd):
                 obj = all_instance[id_formated]
                 for k, v in dict_.items():
                     if k in obj.__class__.__dict__.keys() and type(
-                            obj.__class__dict__[k]) in [float, int, str]:
+                            obj.__class__.__dict__[k]) in [float, int, str]:
                         attr_type = type(obj.__class__.__dict__[k])
                         obj.__dict__[k] = attr_type(v)
                     else:
