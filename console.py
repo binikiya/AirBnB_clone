@@ -288,7 +288,7 @@ class HBNBCommand(cmd.Cmd):
         """
         parsed_args = args.split()
         if len(parsed_args) == 0:
-            print("")
+            print("** class name missing **")
         elif parsed_args[0] in self.classnames:
                 new_obj = eval(parsed_args[0])()
                 print(new_obj.id)
