@@ -38,12 +38,7 @@ class HBNBCommand(cmd.Cmd):
 
     dict_cache = None
 
-    def __init__(self):
-        """
-        Initializes the console
-        """
-        cmd.Cmd.__init__(self)
-        self.prompt = "(hbnb) "
+    prompt = "(hbnb) "
 
     def emptyline(self):
         """
@@ -96,31 +91,31 @@ class HBNBCommand(cmd.Cmd):
         test_for_func = self.extract_dict(line).split('.')
         if len(test_for_func) == 2:
             class_name = test_for_func[0]
-            if (class_name in self.classnames):
-                s_args = test_for_func[1]
-                for i in ch:
-                    s_args = s_args.replace(i, ch[i][0], ch[i][1])
-                finalargs = s_args.split()
-                if len(finalargs) >= 0 and finalargs[0] in cmd_pair:
-                    cmdcache = finalargs[0]
-                    finalstr = ''
-                    finalstr += '{}'.format(class_name)
-                    dict_arr = []
-                    for i in finalargs:
-                        if self.dict_cache is not None:
-                            if i != cmdcache:
-                                i = i.replace('"', '', 2)
-                                dict_arr.append(i)
-                        else:
-                            if i != cmdcache:
-                                i = i.replace('"', '', 2)
-                                finalstr += ' {}'.format(i)
+            s_args = test_for_func[1]
+            for i in ch:
+                s_args = s_args.replace(i, ch[i][0], ch[i][1])
+            finalargs = s_args.split()
+            if len(finalargs) >= 0 and finalargs[0] in cmd_pair:
+                cmdcache = finalargs[0]
+                finalstr = ''
+                finalstr += '{}'.format(class_name)
+                dict_arr = []
+                if self.dict_cache is not None:
+                    dict_arr.append(class_name)
+                for i in finalargs:
                     if self.dict_cache is not None:
-                        dict_arr.append(self.dict_cache)
-                        dict_arr.append(class_name)
-                        cmd_pair[cmdcache](dict_arr)
+                        if i != cmdcache:
+                            i = i.replace('"', '', 2)
+                            dict_arr.append(i)
                     else:
-                        cmd_pair[cmdcache](finalstr)
+                        if i != cmdcache:
+                            i = i.replace('"', '', 2)
+                            finalstr += ' {}'.format(i)
+                if self.dict_cache is not None:
+                    dict_arr.append(self.dict_cache)
+                    cmd_pair[cmdcache](dict_arr)
+                else:
+                    cmd_pair[cmdcache](finalstr)
         else:
             print("*** Unknown syntax: {}".format(line))
             return False
@@ -178,9 +173,9 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     print(all_instance[id_formatted])
             elif class_name not in self.classnames:
-                print("** class does'nt exist ** ")
+                print("** class doesn't exist ** ")
         elif arg_len == 1 and parsedargs[0] not in self.classnames:
-            print("** class does'nt exist ** ")
+            print("** class doesn't exist ** ")
         elif arg_len == 1 and parsedargs[0] in self.classnames:
             print("** instance id missing ** ")
         if arg_len == 0:
@@ -205,13 +200,41 @@ class HBNBCommand(cmd.Cmd):
                     del all_instance[id_formatted]
                     storage.save()
             elif class_name not in self.classnames:
-                print("** class does'nt exist ** ")
+                print("** class doesn't exist ** ")
         elif arg_len == 1 and parsedargs[0] not in self.classnames:
-            print("** class does'nt exist ** ")
+            print("** class doesn't exist ** ")
         elif arg_len == 1 and parsedargs[0] in self.classnames:
             print("** instance id missing ** ")
         if arg_len == 0:
             print("** class name missing ** ")
+
+    def handle_update_errors(self, parsed_args, arg_len):
+        """
+        Handles Errors for update
+        """
+        if len(parsed_args) == 0:
+            print("** class name missing **")
+        elif len(parsed_args) >= 1:
+            if parsed_args[0] in self.classnames:
+                if arg_len == 1:
+                    print("** instance id missing **")
+                elif arg_len >= 2:
+                    a, b, *t = parsed_args
+                    id_formated = id_formated = "{}.{}".format(a, b)
+                    if arg_len == 2 and id_formated in storage.all():
+                        print("** attribute name missing **")
+                    else:
+                        if arg_len == 3:
+                            if self.dict_cache is not None:
+                                return True
+                            print("** value missing **")
+                        else:
+                            if arg_len == 4:
+                                return True
+                            print("** no instance found **")
+            else:
+                print("** class doesn't exist **")
+        return False
 
     def do_update(self, args):
         """ Updates an instance based on the class name and id by adding or
@@ -222,10 +245,11 @@ class HBNBCommand(cmd.Cmd):
             parsed_args = args.split()
         else:
             parsed_args = args
-        if len(parsed_args) == 0:
-            print("** class name missing **")
-        elif len(parsed_args) == 3 and type(eval(parsed_args[1]) == dict):
-            class_id, dict_val, class_name = parsed_args
+        arg_len = len(parsed_args)
+        no_err = self.handle_update_errors(parsed_args, arg_len)
+        dict_right = self.dict_cache is not None
+        if no_err and dict_right and type(eval(parsed_args[2]) == dict):
+            class_name, class_id, dict_val = parsed_args
             dict_ = eval(dict_val)
             id_formated = "{}.{}".format(class_name, class_id)
             all_instance = storage.all()
@@ -234,12 +258,12 @@ class HBNBCommand(cmd.Cmd):
                 for k, v in dict_.items():
                     if k in obj.__class__.__dict__.keys() and type(
                             obj.__class__.__dict__[k]) in [float, int, str]:
-                        attr_type = type(obj.__class__.__dict__[k])
-                        obj.__dict__[k] = attr_type(v)
+                        attr_t = type(obj.__class__.__dict__[k])
+                        obj.__dict__[k] = attr_t(v)
                     else:
                         obj.__dict__[k] = v
                 storage.save()
-        elif len(parsed_args) >= 4:
+        elif no_err and len(parsed_args) >= 4:
             class_name, class_id, attr_name, attr_val, *tmp = parsed_args
             if class_name not in self.classnames:
                 print("** class doesn't exist **")
@@ -251,18 +275,12 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     obj_trgt = all_instance[id_formated]
                     if attr_name in obj_trgt.__class__.__dict__.keys():
-                        attr_type = type(obj_trgt.__class__.__dict__[attr_name])
-                        obj_trgt.__dict__[attr_name] = attr_type(attr_val)
+                        attr_t = type(obj_trgt.__class__.__dict__[attr_name])
+                        obj_trgt.__dict__[attr_name] = attr_t(attr_val)
                     else:
                         obj_trgt.__dict__[attr_name] = attr_val
 
                 storage.save()
-        elif len(parsed_args) == 3:
-            print("** value missing **")
-        elif len(parsed_args) == 2:
-            print("** attribute name missing **")
-        elif len(parsed_args) == 1:
-            print("** instance id missing **")
 
     def do_create(self, args):
         """ Creates a new instance of BaseModel and saves it to JSON file
@@ -277,7 +295,7 @@ class HBNBCommand(cmd.Cmd):
                 storage.new(new_obj)
                 storage.save()
         elif args not in self.classnames:
-            print("** class does'nt exist **")
+            print("** class doesn't exist **")
 
 
 if __name__ == '__main__':
