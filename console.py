@@ -206,7 +206,7 @@ class HBNBCommand(cmd.Cmd):
         elif arg_len == 1 and parsedargs[0] in self.classnames:
             print("** instance id missing **")
         if arg_len == 0:
-            print("")
+            print("** class name missing **")
 
     def handle_update_errors(self, parsed_args, arg_len):
         """
