@@ -231,7 +231,8 @@ class HBNBCommand(cmd.Cmd):
                         else:
                             if arg_len == 4:
                                 return True
-                            print("** no instance found **")
+                            if self.dict_cache is None:
+                                print("** no instance found **")
             else:
                 print("** class doesn't exist **")
         return False
