@@ -169,17 +169,17 @@ class HBNBCommand(cmd.Cmd):
             id_formatted = '{}.{}'.format(class_name, class_id)
             if class_name in self.classnames:
                 if id_formatted not in all_instance:
-                    print("** no instance found ** ")
+                    print("** no instance found **")
                 else:
                     print(all_instance[id_formatted])
             elif class_name not in self.classnames:
-                print("** class doesn't exist ** ")
+                print("** class doesn't exist **")
         elif arg_len == 1 and parsedargs[0] not in self.classnames:
-            print("** class doesn't exist ** ")
+            print("** class doesn't exist **")
         elif arg_len == 1 and parsedargs[0] in self.classnames:
-            print("** instance id missing ** ")
+            print("** instance id missing **")
         if arg_len == 0:
-            print("** class name missing ** ")
+            print("** class name missing **")
 
     def do_destroy(self, args):
         """ Deletes an instance based on the class name
@@ -195,18 +195,18 @@ class HBNBCommand(cmd.Cmd):
             id_formatted = '{}.{}'.format(class_name, class_id)
             if class_name in self.classnames:
                 if id_formatted not in all_instance:
-                    print("** no instance found ** ")
+                    print("** no instance found **")
                 else:
                     del all_instance[id_formatted]
                     storage.save()
             elif class_name not in self.classnames:
-                print("** class doesn't exist ** ")
+                print("** class doesn't exist **")
         elif arg_len == 1 and parsedargs[0] not in self.classnames:
-            print("** class doesn't exist ** ")
+            print("** class doesn't exist **")
         elif arg_len == 1 and parsedargs[0] in self.classnames:
-            print("** instance id missing ** ")
+            print("** instance id missing **")
         if arg_len == 0:
-            print("** class name missing ** ")
+            print("")
 
     def handle_update_errors(self, parsed_args, arg_len):
         """
@@ -288,7 +288,7 @@ class HBNBCommand(cmd.Cmd):
         """
         parsed_args = args.split()
         if len(parsed_args) == 0:
-            print("** class name missing ** ")
+            print("")
         elif parsed_args[0] in self.classnames:
                 new_obj = eval(parsed_args[0])()
                 print(new_obj.id)
