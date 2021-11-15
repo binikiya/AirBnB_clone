@@ -22,7 +22,6 @@ class TestBaseModel(unittest.TestCase):
 
 class TestBaseModelNoArgs(unittest.TestCase):
     """tests existance of public attributes in BaseModel class"""
-
     def assertDateTimeAlmostEqual(self, time1, time2):
         self.assertEqual(time1.year, time2.year)
         self.assertEqual(time1.month, time2.month)
@@ -118,8 +117,8 @@ class TestBaseModelNoArgs(unittest.TestCase):
 
         self.assertDictEqual(self.cls3_dic, self.cls3_obj)
 
-class TestBaseModeKargs(unittest.TestCase):
-    """tests existance of BaseModel class"""
+class TestBaseKwargs(unittest.TestCase):
+    """Tests the existance of public attributes"""
 
     def assertDateTimeAlmostEqual(self, time1, time2):
         self.assertEqual(time1.year, time2.year)
@@ -134,77 +133,14 @@ class TestBaseModeKargs(unittest.TestCase):
         self.cls1_obj = self.cls1.to_dict()
         self.cls2 = BaseModel(updated_at=self.some_time)
         self.cls2_obj = self.cls2.to_dict()
+
         self.cls3 = BaseModel(created_at=self.some_time)
         self.cls3.name = "Random Name"
         self.cls3.number = 444
         self.cls3_obj = self.cls3.to_dict()
+
         self.cls4 = BaseModel(created_at=self.some_time, id="Nones")
         self.cls4_obj = self.cls4.to_dict()
-
-    def test_id_exists(self):
-        self.assertIn("id", self.cls1.__dict__.keys())
-        self.assertIn("id", self.cls2.__dict__.keys())
-        self.assertIn("id", self.cls3.__dict__.keys())
-
-    def test_id_type(self):
-        self.assertIsInstance(self.cls1.id, str)
-        self.assertIsInstance(self.cls2.id, str)
-        self.assertIsInstance(self.cls3.id, str)
-
-    def test_time_exists(self):
-        self.assertIn("created_at", self.cls2.__dict__.keys())
-        self.assertIn("created_at", self.cls1.__dict__.keys())
-        self.assertIn("updated_at", self.cls3.__dict__.keys())
-
-    def test_time_type(self):
-        self.assertIsInstance(self.cls1.created_at, datetime)
-        self.assertIsInstance(self.cls2.created_at, datetime)
-        self.assertIsInstance(self.cls3.created_at, datetime)
-        self.assertIsInstance(self.cls1.updated_at, datetime)
-        self.assertIsInstance(self.cls2.updated_at, datetime)
-        self.assertIsInstance(self.cls3.updated_at, datetime)
-        self.assertRaises(ValueError, BaseModel, updated_at="Wrong_format")
-        self.assertRaises(ValueError, BaseModel, created_at="Wrong_format")
-
-    def test_time(self):
-        TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-        self.assertDateTimeAlmostEqual(
-            datetime.strptime(self.some_time, TIME_FORMAT),
-            self.cls2.updated_at)
-        self.assertDateTimeAlmostEqual(
-            datetime.strptime(self.some_time, TIME_FORMAT),
-            self.cls3.created_at)
-
-    def test_to_dict_keys(self):
-        self.assertIn("updated_at", self.cls3_obj.keys())
-        self.assertIn("created_at", self.cls2_obj.keys())
-        self.assertIn("created_at", self.cls1_obj.keys())
-
-    def test_to_dict(self):
-        self.assertEqual(self.cls3_obj["updated_at"],
-                         self.cls3.updated_at.isoformat())
-        self.assertEqual(self.cls2_obj["created_at"],
-                         self.cls2.created_at.isoformat())
-        self.assertEqual(self.cls1_obj["created_at"],
-                         self.cls1.created_at.isoformat())
-
-        self.cls3_dic = {
-            "name": "Random Name",
-            "number": 444,
-            "id": self.cls3.id,
-            "created_at": self.some_time,
-            "updated_at": str(self.cls3.updated_at.isoformat()),
-            "__class__": self.cls3.__class__.__name__,
-        }
-
-        self.cls4_dic = {
-            "id": "Nones",
-            "created_at": self.some_time,
-            "updated_at": str(self.cls3.updated_at.isoformat()),
-            "__class__": self.cls3.__class__.__name__,
-        }
-
-        self.assertDictEqual(self.cls3_dic, self.cls3_obj)
 
 class TestBaseModelToDict(unittest.TestCase):
     """test for to_dict method in BaseModel class"""
@@ -298,13 +234,6 @@ class TestBaseModelSave(unittest.TestCase):
         bm = BaseModel()
         with self.assertRaises(TypeError):
             bm.save(None)
-
-    def test_save_updates_file(self):
-        bm = BaseModel()
-        bm.save()
-        bmid = "BaseModel." + bm.id
-        with open("file.json", "r") as f:
-            self.assertIn(bmid, f.read())
 
 if __name__ == "__main__":
     unittest.main()
