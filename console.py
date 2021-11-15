@@ -221,18 +221,22 @@ class HBNBCommand(cmd.Cmd):
                 elif arg_len >= 2:
                     a, b, *t = parsed_args
                     id_formated = id_formated = "{}.{}".format(a, b)
-                    if arg_len == 2 and id_formated in storage.all():
+                    id_exist = id_formated in storage.all()
+                    if arg_len == 2 and id_exist:
                         print("** attribute name missing **")
                     else:
                         if arg_len == 3:
                             if self.dict_cache is not None:
-                                return True
+                                if id_exist:
+                                    return True
+                                else:
+                                    print("** no instance found **")
+                                    return
                             print("** value missing **")
                         else:
                             if arg_len == 4:
                                 return True
-                            if self.dict_cache is None:
-                                print("** no instance found **")
+                            print("** no instance found **")
             else:
                 print("** class doesn't exist **")
         return False
@@ -266,22 +270,16 @@ class HBNBCommand(cmd.Cmd):
                 storage.save()
         elif no_err and len(parsed_args) >= 4:
             class_name, class_id, attr_name, attr_val, *tmp = parsed_args
-            if class_name not in self.classnames:
-                print("** class doesn't exist **")
+            all_instance = storage.all()
+            id_formated = "{}.{}".format(class_name, class_id)
+            obj_trgt = all_instance[id_formated]
+            if attr_name in obj_trgt.__class__.__dict__.keys():
+                attr_t = type(obj_trgt.__class__.__dict__[attr_name])
+                obj_trgt.__dict__[attr_name] = attr_t(attr_val)
             else:
-                all_instance = storage.all()
-                id_formated = "{}.{}".format(class_name, class_id)
-                if id_formated not in all_instance:
-                    print("** no instance found **")
-                else:
-                    obj_trgt = all_instance[id_formated]
-                    if attr_name in obj_trgt.__class__.__dict__.keys():
-                        attr_t = type(obj_trgt.__class__.__dict__[attr_name])
-                        obj_trgt.__dict__[attr_name] = attr_t(attr_val)
-                    else:
-                        obj_trgt.__dict__[attr_name] = attr_val
+                obj_trgt.__dict__[attr_name] = attr_val
 
-                storage.save()
+            storage.save()
 
     def do_create(self, args):
         """ Creates a new instance of BaseModel and saves it to JSON file
