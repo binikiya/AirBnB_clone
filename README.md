@@ -26,7 +26,7 @@ $ python ./console.py
 ## How to use it
 | Command | Description | Syntax |Advanced |
 |---------|-------------|---------|---------|
-| `create` | Create a new instance of a model | `create <model> <attribute> <value>` |`None`|
+| `create` | Create a new instance of a model | `create <model>` |`None`|
 | `show` | Show all instances of a model | `show <model>` |`<model>.show(<id>)`|
 | `destroy` | Destroy an instance of a model | `destroy <model> <id>` |`<model>.destroy(<id>)`|
 | `update` | Update an instance of a model | `update <model> <id> <attribute> <value>` |`<model>.update(<id>, <args> or <dict>)`|
