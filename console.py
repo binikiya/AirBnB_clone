@@ -234,9 +234,10 @@ class HBNBCommand(cmd.Cmd):
                                     return
                             print("** value missing **")
                         else:
-                            if arg_len == 4:
+                            if arg_len == 4 and id_exist:
                                 return True
-                            print("** no instance found **")
+                            else:
+                                print("** no instance found **")
             else:
                 print("** class doesn't exist **")
         return False
@@ -278,7 +279,6 @@ class HBNBCommand(cmd.Cmd):
                 obj_trgt.__dict__[attr_name] = attr_t(attr_val)
             else:
                 obj_trgt.__dict__[attr_name] = attr_val
-
             storage.save()
 
     def do_create(self, args):
