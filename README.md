@@ -24,7 +24,7 @@ $ python ./console.py
 ```
 
 ## How to use it
-| Command | Description | Syntax |Advanced |
+| Command | Description | Syntax |Advanced Syntax|
 |---------|-------------|---------|---------|
 | `create` | Create a new instance of a model | `create <model>` |`None`|
 | `show` | Show all instances of a model | `show <model>` |`<model>.show(<id>)`|
